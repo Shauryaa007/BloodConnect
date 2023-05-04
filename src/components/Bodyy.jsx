@@ -17,7 +17,7 @@ const Boddy=()=>{
                 <div className="grid grid-cols-2 grid-flow-col gap-4  my-10 mx-10">
                 
                 <div style={{padding:"0.01em" , color:"black",fontWeight:"bold" , fontSize:"3em" , textDecoration:"overline"}}>
-                    Blood Connect
+                    Blood Connectsss
                 </div>
 
                 <div className={styles.navbar } >
