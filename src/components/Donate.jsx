@@ -3,6 +3,8 @@ import Lottie from "lottie-react";
 import donate from "../assets/donate.json";
 import { useState } from "react";
 import Categories from "../assets/data";
+import React, { useEffect } from 'react'
+import axios from 'axios';
 
 const Donate=()=>{
     const [Category,setCategory]=useState("A+");
@@ -13,8 +15,33 @@ const Donate=()=>{
     const [weight,setWeight]=useState(50);
     const [gender,setGender]=useState("male");
 
-const [inp, setInp] = useState("");
-const [search, setSearch] = useState("");
+    const [lat,setLat] = useState();
+
+    const [long,setLong] = useState();
+
+   const [inp, setInp] = useState("");
+   const [search, setSearch] = useState("");
+
+
+useEffect(()=>{
+
+    if (navigator.geolocation) {
+
+        navigator.geolocation.getCurrentPosition(function (position){
+
+            setLat(position.coords.latitude)
+
+            setLong(position.coords.longitude)
+
+                    });   
+
+      }
+
+    },[]);
+
+    console.log(lat,long);
+
+
 
     const [doners,setDoners] = useState([{
         name:"",
@@ -23,7 +50,9 @@ const [search, setSearch] = useState("");
         age:"",
         weight:"",
         gender:"",
-        Category:""
+        Category:"",
+        lati:lat,
+        longi:long
     }]);
 
 
@@ -37,9 +66,22 @@ const [search, setSearch] = useState("");
         setWeight(0);
     }
 
+    const getDoners = (e) =>{
+        axios.get('http://127.0.0.1:3001/getAllDoners')
+        .then (res =>{
+          setDoners(res.data);
+        })
+
+      }
+    
+    
+      useEffect(()=>{
+          getDoners();
+      },[])
+    
+
     const submitDoners=(e)=>{
         console.log("clicked");
-           e.preventDefault();
 
             const newDoner ={
                 name:name,
@@ -48,13 +90,19 @@ const [search, setSearch] = useState("");
                 age,
                 weight,
                 gender,
-                Category
+                Category,
+                lati:lat,
+                longi:long
             }
 
+            axios.post("http://127.0.0.1:3001/submitDoner",newDoner)
+            .then(res=>{
+            console.log(res);
+             })
 
-            setDoners([...doners,newDoner]);
+             reset();
 
-            reset();
+             getDoners();
     }
 
 
@@ -110,7 +158,7 @@ const [search, setSearch] = useState("");
                             );
                         })
                     }
-                </table></center>
+                </table></center> 
 
 
 
@@ -118,7 +166,7 @@ const [search, setSearch] = useState("");
     <div className={styles.box1}>
             
         <center>
-            <form action="" onSubmit={submitDoners} >
+            <form action=""  >
             <table className={styles.table}>
                 <tr className={styles.tr}>
                     <th style={{fontFamily:"cursive" ,fontSize:"1.5em"}} colSpan={2}>Donate Blood</th>
@@ -171,7 +219,7 @@ const [search, setSearch] = useState("");
                 </tr>
 
                 <tr className={styles.tr}>
-                    <th colSpan={3} style={{fontFamily:"cursive" ,fontSize:"1.2em" }} ><input className={styles.btn} type="submit"></input></th>
+                    <th colSpan={3} style={{fontFamily:"cursive" ,fontSize:"1.2em" }} ><input className={styles.btn} type="submit" onClick={submitDoners}></input></th>
                 </tr>
 
             </table>
